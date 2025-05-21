@@ -1,0 +1,50 @@
+Year,Cover_CDL,Area,Percentage_Cover,Non_Cover_CDL,Area,Percentage_Non_Cover
+2013,Cover Crops-Soybean,243432.32,3.89,Non Cover Crops-Soybean,2793568.2,44.63
+2014,Cover Crops-Soybean,178035.88,2.86,Non Cover Crops-Soybean,2924847,46.95
+2015,Cover Crops-Soybean,285994.96,4.58,Non Cover Crops-Soybean,2885106.23,46.2
+2016,Cover Crops-Soybean,293529.65,4.69,Non Cover Crops-Soybean,3374507.64,53.97
+2017,Cover Crops-Soybean,213859.53,3.42,Non Cover Crops-Soybean,3311138.92,52.92
+2018,Cover Crops-Soybean,275349.3,4.35,Non Cover Crops-Soybean,2396154.04,37.86
+2019,Cover Crops-Soybean,377750.26,5.99,Non Cover Crops-Soybean,2463979.84,39.04
+2013,Cover Crops-Corn,32714.23,0.52,Non Cover Crops-Corn,424431.5,6.78
+2014,Cover Crops-Corn,27898,0.45,Non Cover Crops-Corn,341373.31,5.48
+2015,Cover Crops-Corn,68956.86,1.1,Non Cover Crops-Corn,560513.42,8.98
+2016,Cover Crops-Corn,41164.27,0.66,Non Cover Crops-Corn,434621.5,6.95
+2017,Cover Crops-Corn,50814.08,0.81,Non Cover Crops-Corn,493318.09,7.88
+2018,Cover Crops-Corn,102319.57,1.62,Non Cover Crops-Corn,549425.2,8.68
+2019,Cover Crops-Corn,96379.17,1.53,Non Cover Crops-Corn,442415.27,7.01
+2013,Cover Crops-Cotton,29294.59,0.47,Non Cover Crops-Cotton,287696.22,4.6
+2014,Cover Crops-Cotton,13085.25,0.21,Non Cover Crops-Cotton,176849.44,2.84
+2015,Cover Crops-Cotton,45221.28,0.72,Non Cover Crops-Cotton,292985.25,4.69
+2016,Cover Crops-Cotton,55979.02,0.9,Non Cover Crops-Cotton,304168.42,4.86
+2017,Cover Crops-Cotton,46705.71,0.75,Non Cover Crops-Cotton,390951.15,6.25
+2018,Cover Crops-Cotton,189360.04,2.99,Non Cover Crops-Cotton,372982.95,5.89
+2019,Cover Crops-Cotton,135406.75,2.15,Non Cover Crops-Cotton,333993.85,5.29
+2013,Cover Crops-Rice,67347,1.08,Non Cover Crops-Rice,1332352.26,21.28
+2014,Cover Crops-Rice,31179.99,0.5,Non Cover Crops-Rice,1166581.69,18.72
+2015,Cover Crops-Rice,36591.77,0.59,Non Cover Crops-Rice,1382768.94,22.14
+2016,Cover Crops-Rice,44228.98,0.71,Non Cover Crops-Rice,985020.31,15.75
+2017,Cover Crops-Rice,22438.18,0.36,Non Cover Crops-Rice,1285817.79,20.55
+2018,Cover Crops-Rice,42811.27,0.68,Non Cover Crops-Rice,1021830.69,16.15
+2019,Cover Crops-Rice,68333.73,1.08,Non Cover Crops-Rice,1280846.11,20.29
+2013,Cover Crops-Sorghum,13514.01,0.22,Non Cover Crops-Sorghum,123530.17,1.97
+2014,Cover Crops-Sorghum,21778.58,0.35,Non Cover Crops-Sorghum,383900.82,6.16
+2015,Cover Crops-Sorghum,2522.31,0.04,Non Cover Crops-Sorghum,18410.08,0.29
+2016,Cover Crops-Sorghum,885.54,0.01,Non Cover Crops-Sorghum,1500.67,0.02
+2017,Cover Crops-Sorghum,284.43,0,Non Cover Crops-Sorghum,3678.28,0.06
+2018,Cover Crops-Sorghum,1210.67,0.02,Non Cover Crops-Sorghum,2826.76,0.04
+2019,Cover Crops-Sorghum,3589.33,0.06,Non Cover Crops-Sorghum,3617.35,0.06
+2013,Cover Crops-Double Crops,115262.94,1.84,Non Cover Crops-Double Crops,169931.65,2.71
+2014,Cover Crops-Double Crops,54966.05,0.88,Non Cover Crops-Double Crops,119204.08,1.91
+2015,Cover Crops-Double Crops,65729.8,1.05,Non Cover Crops-Double Crops,16392.81,0.26
+2016,Cover Crops-Double Crops,54511.71,0.87,Non Cover Crops-Double Crops,19094.14,0.31
+2017,Cover Crops-Double Crops,54288.21,0.87,Non Cover Crops-Double Crops,30631.8,0.49
+2018,Cover Crops-Double Crops,15568.42,0.25,Non Cover Crops-Double Crops,11902.37,0.19
+2019,Cover Crops-Double Crops,26593.7,0.42,Non Cover Crops-Double Crops,9065.6,0.14
+2013,Cover Crops-Other Crops,175693.7,2.81,Non Cover Crops-Other Crops,451158.19,7.21
+2014,Cover Crops-Other Crops,113721.13,1.83,Non Cover Crops-Other Crops,676889.62,10.86
+2015,Cover Crops-Other Crops,110057.3,1.76,Non Cover Crops-Other Crops,473738.25,7.59
+2016,Cover Crops-Other Crops,71269.24,1.14,Non Cover Crops-Other Crops,572334.84,9.15
+2017,Cover Crops-Other Crops,18461.68,0.3,Non Cover Crops-Other Crops,334775.54,5.35
+2018,Cover Crops-Other Crops,253502,4.01,Non Cover Crops-Other Crops,1093639.21,17.28
+2019,Cover Crops-Other Crops,196618.75,3.12,Non Cover Crops-Other Crops,872599.48,13.83
