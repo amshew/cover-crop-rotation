@@ -29,7 +29,8 @@ pacman::p_load(
   tigris,
   ggspatial,
   patchwork,
-  CropScapeR
+  CropScapeR,
+  tidyterra
 )
 
 
@@ -44,83 +45,136 @@ options(tigris_use_cache = TRUE, tigris_class = "sf")
 #  ╭───────────────────╮
 #  │  1. Vector data   │
 #  ╰───────────────────╯
-# US states (low-res for speed)
+# ── CONUS states (drop AK, HI, PR, etc.) ─────────────────────────
 us_states <- states(cb = TRUE, year = 2020) |>
-  st_transform(5070)   # Albers Equal Area CONUS
+  filter(!(STUSPS %in% c("AK", "HI", "PR", "VI", "GU", "MP", "AS"))) |>
+  st_transform(5070)
 
 # Arkansas counties
+# ── 0. Arkansas counties --------------------------------------------------------
 ar_counties <- counties(state = "AR", cb = TRUE, year = 2020) |>
-  st_transform(st_crs(us_states))
+  st_transform(5070)    # lon/lat so we can test longitudes
 
-delta_fips <- c("05001","05003","05011","05013","05017","05019",
-                "05021","05025","05027","05029","05031","05035",
-                "05037","05041","05043","05045","05047","05049",
-                "05053","05055","05061","05063","05067","05069",
-                "05071","05075","05077")   # adjust as needed
+delta_fips <- c("05001", "05017", "05003", "05043", "05041",
+                "05079","05069","05107","05095", "05117",
+                "05119","05085","05145","05147","05077",
+                "05123","05035","05037","05067","05111",
+                "05031","05093","05055","05075", "05021",
+                "05121","05135")   # adjust as needed
 
 delta_cnty <- ar_counties %>%
   filter(GEOID %in% delta_fips)
 
-
-delta_bbox <- st_as_sfc(st_bbox(delta_cnty))
+# (Optional) inspect which counties made the cut:
+sort(unique(delta_cnty$NAME))
 
 #  ╭────────────────────╮
 #  │  2. Raster (CDL)   │
 #  ╰────────────────────╯
 # Download 2019 CDL for Arkansas from USDA NASS Cropland Data Layer
 
-# ── Arkansas CDL 2019 ────────────────────────────────────────────
-cdl_ar <- GetCDLData(aoi = 5,            # 2-digit FIPS for Arkansas
-                     year = 2019,
-                     type = "f",         # “f” = state/county FIPS
-                     format = "raster")   # returns SpatRaster
+# ------------------------------------------------------------------
+# ── 1. Arkansas CDL 2019 as RasterLayer ─────────────────────────
+cdl_ar_rl <- GetCDLData(
+  aoi   = "05",      # Arkansas FIPS; character string is safest
+  year  = 2019,
+  type  = "f",       # state/county FIPS
+  format = "raster"  # <- must be raster, table, or sf
+)
 
-# Crop + mask to Delta counties
-delta_cdl <- terra::crop(cdl_ar, st_transform(delta_cnty, crs(cdl_ar))) |>
-  terra::mask(st_transform(delta_cnty, crs(cdl_ar)))
+# ── 2. Convert to SpatRaster for terra workflows ────────────────
+cdl_ar <- terra::rast(cdl_ar_rl)
 
+# ── 3. Delta counties as SpatVector in raster CRS ──────────────
+delta_vect <- delta_cnty |>
+  st_transform(crs(cdl_ar)) |>
+  terra::vect()                      # SpatVector for terra
 
-# Pick a small subset of CDL classes to simplify legend (edit as needed)
-major_codes <- c(1, 5, 23, 24, 36, 37, 61)  # Example: corn, cotton, soybean …
-delta_cdl[!delta_cdl %in% major_codes] <- NA
+# ── 4.  Bounding box in raster CRS (optional, if you still want bbox) ─────
+delta_bbox <- delta_cnty |>
+  st_transform(crs(cdl_ar)) |>
+  st_bbox() |>
+  st_as_sfc() |>
+  terra::vect()       
 
-# Reclassify codes to factor with readable labels
-cdl_lu <- read_csv("https://www.nass.usda.gov/Research_and_Science/Cropland/docs/categories.csv")
-lu <- cdl_lu |> filter(Layer == 2019 & Code %in% major_codes) |> 
-  select(value = Code, crop = Class) |> as.data.frame()
+# ── 5. Crop + mask ──────────────────────────────────────────────
+delta_cdl <- cdl_ar |>
+  terra::crop(delta_bbox) |>        # shrink to extent
+  terra::mask(delta_bbox) 
 
-delta_cdl <- terra::as.factor(delta_cdl, levels = lu)
+# -------------------------------------------------
+# 6. keep major codes, drop the rest  -------------
+# -------------------------------------------------
+major_codes <- c(1, 3, 5, 23, 24, 36, 37, 61)   # added rice (3)
 
-#  ╭────────────────────╮
-#  │  3. Plot styling   │
-#  ╰────────────────────╯
-cb_palette <- RColorBrewer::brewer.pal(length(major_codes), "Set2") # color-blind safe
+delta_cdl <- terra::crop(cdl_ar, delta_vect) |>   # extent
+  terra::mask(delta_vect)              # tidy border
+
+delta_cdl <- terra::subst(delta_cdl,
+                          from   = setdiff(0:255, major_codes),  # everything else
+                          to     = NA)                           # → NA
+
+# -------------------------------------------------
+# 7. promote to categorical and get labels --------
+# -------------------------------------------------
+delta_cdl  <- terra::as.factor(delta_cdl)
+rat <- levels(delta_cdl)[[1]]
+rat_major <- rat[ rat$ID %in% major_codes, ]
+
+levels(delta_cdl) <- list(rat_major)                # clean RAT
+
+# -------------------------------------------------
+# 3. palette named by label -----------------------
+# -------------------------------------------------
+cb_palette <- RColorBrewer::brewer.pal(length(major_codes), "Set2")
+names(cb_palette) <- rat$label
 
 # Left panel – CONUS map with bounding box
 p_us <- ggplot() +
   geom_sf(data = us_states, fill = "grey90", color = "white", size = 0.2) +
   geom_sf(data = delta_bbox, fill = NA, color = "red", linewidth = 0.8) +
   theme_void() +
-  labs(title = "United States with Arkansas Delta highlighted")
+  labs(title = "United States Highlighting\nArkansas Study Region")
+p_us
 
 # Right panel – Delta inset with CDL
 p_inset <- ggplot() +
   geom_spatraster(data = delta_cdl) +
-  scale_fill_manual(values = cb_palette, na.translate = FALSE,
-                    name = "2019 Cropland Data Layer\n(Delta counties only)") +
+  scale_fill_manual(
+    values       = cb_palette,
+    na.value     = "grey85",     # colour for Minor Crops
+    na.translate = TRUE,
+    breaks       = c(rat$label, NULL),
+    labels       = c(rat$label,  "Minor Crops"),
+    name         = "2019 Cropland Data Layer\n(Arkansas Delta)"
+  ) +
   geom_sf(data = ar_counties, fill = NA, color = "grey60", linewidth = 0.2) +
   coord_sf(crs = st_crs(ar_counties)) +
-  annotation_scale(location = "bl", width_hint = 0.4) +
-  annotation_north_arrow(location = "tl", which_north = "true",
+  annotation_scale(location = "bl",
+                   width_hint = 0.35,          # ~35 % of plot width
+                   pad_x = unit(0.70, "npc"),  # nudges to centre
+                   pad_y = unit(0.15, "cm")) +
+  annotation_north_arrow(location = "bl",
+                         which_north = "true",
+                         pad_x = unit(0.75, "npc"),
+                         pad_y = unit(0.60, "cm"),
                          style = north_arrow_fancy_orienteering) +
   theme_minimal(base_size = 10) +
   theme(axis.text = element_blank(),
         panel.grid = element_blank()) +
-  labs(title = "Arkansas Delta study region")
+  labs(title = "Arkansas Delta Study Region")
+
+p_inset
 
 # Combine & export
 fig1 <- p_us + p_inset + plot_layout(widths = c(1, 1.2))
+fig1
+
 ggsave("figure1_delta_map.png", fig1, width = 10, height = 6, dpi = 300)
+
+
+
+
 
 
 # 3.2	Adoption of cover crops on fall cash crop fields
