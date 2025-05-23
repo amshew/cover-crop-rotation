@@ -98,84 +98,123 @@ delta_bbox <- delta_cnty |>
   terra::vect()       
 
 # ── 5. Crop + mask ──────────────────────────────────────────────
-delta_cdl <- cdl_ar |>
-  terra::crop(delta_bbox) |>        # shrink to extent
-  terra::mask(delta_bbox) 
+# ------------------------------------------------------------------
+# 1.  Crop & mask CDL to Delta counties ----------------------------
+# ------------------------------------------------------------------
+delta_cdl <- terra::crop(cdl_ar, delta_vect) |>
+  terra::mask(delta_vect)
 
-# -------------------------------------------------
-# 6. keep major codes, drop the rest  -------------
-# -------------------------------------------------
-major_codes <- c(1, 3, 5, 23, 24, 36, 37, 61)   # added rice (3)
+# ------------------------------------------------------------------
+# 2.  Keep only major classes; everything else → NA ----------------
+# ------------------------------------------------------------------
+major_codes <- c(1, 2, 3, 4, 5, 10, 24, 37, 61)   # corn, rice, soybean, cotton, fallow
+delta_cdl   <- terra::subst(delta_cdl,
+                            from   = major_codes,
+                            to     = major_codes,
+                            others = NA)         # minor crops become NA
 
-delta_cdl <- terra::crop(cdl_ar, delta_vect) |>   # extent
-  terra::mask(delta_vect)              # tidy border
+# ------------------------------------------------------------------
+# 3.  Promote to factor and grab the RAT ---------------------------
+# ------------------------------------------------------------------
+delta_cdl <- terra::as.factor(delta_cdl)
 
-delta_cdl <- terra::subst(delta_cdl,
-                          from   = setdiff(0:255, major_codes),  # everything else
-                          to     = NA)                           # → NA
-
-# -------------------------------------------------
-# 7. promote to categorical and get labels --------
-# -------------------------------------------------
-delta_cdl  <- terra::as.factor(delta_cdl)
+# b. lookup table that comes with the CDL tile
 rat <- levels(delta_cdl)[[1]]
-rat_major <- rat[ rat$ID %in% major_codes, ]
 
-levels(delta_cdl) <- list(rat_major)                # clean RAT
+# c. keep only the nine classes you care about, in your preferred order
+major_codes <- c(1, 2, 5, 3, 10, 4, 61)   # corn, cotton, …
+rat_major   <- rat[match(major_codes, rat$ID), ]
 
-# -------------------------------------------------
-# 3. palette named by label -----------------------
-# -------------------------------------------------
-cb_palette <- RColorBrewer::brewer.pal(length(major_codes), "Set2")
-names(cb_palette) <- rat$label
+# d. overwrite the generic numeric labels with real crop names
+label_map <- c(
+  `1`  = "Corn",
+  `2`  = "Cotton",
+  `5`  = "Soybeans",
+  `3`  = "Rice",
+  #`24` = "Winter Wheat",
+  `10` = "Peanuts",
+  `4`  = "Sorghum",
+  `61` = "Fallow / Idle"
+)
+
+rat_major$Layer_1 <- label_map[ as.character(rat_major$ID) ]
+
+# e. re-attach the cleaned RAT
+levels(delta_cdl) <- list(rat_major)
+
+## -----------------------------------------------------------------
+## 4. Build a named palette (one colour per crop)
+## -----------------------------------------------------------------
+
+cb_palette <- c(
+  "Corn"          = "#F0E442",   
+  "Cotton"        = "#D55E00",
+  "Soybeans"      = "#009E73",
+  "Rice"          = "#56B4E9",
+  #"Winter Wheat"  = "#a6d854",
+  "Peanuts"       = "#E69F00",
+  "Sorghum"       = "#CC79A7",
+  "Fallow / Idle" = "#BBBBBB"
+)
+names(cb_palette) <- rat_major$Layer_1   # names drive legend text
+
+## -----------------------------------------------------------------
+## 5. Inset map with the new legend
+## -----------------------------------------------------------------
+p_inset <- ggplot() +
+  geom_spatraster(data = delta_cdl) +
+  
+  scale_fill_manual(
+    values       = cb_palette,
+    na.value     = "grey85",        # minor crops draw grey
+    na.translate = FALSE,           # (and stay out of the legend)
+    breaks       = rat_major$Layer_1,   # text order in legend
+    labels       = rat_major$Layer_1,
+    name         = "2019 Cropland Data Layer\n(Arkansas Delta)"
+  ) +
+  
+  geom_sf(data=ar_counties, fill = NA, colour = "grey60", linewidth = 0.25) +
+  geom_sf(data = delta_bbox, fill = NA, color = "red", linewidth = 0.5) +
+  coord_sf(crs = st_crs(ar_counties)) +
+  
+  annotation_scale(location = "bl",
+                   width_hint = 0.35,
+                   pad_x = unit(0.65, "npc"),
+                   pad_y = unit(0.15, "cm")) +
+  annotation_north_arrow(location = "bl",
+                         which_north = "true",
+                         pad_x = unit(0.75, "npc"),
+                         pad_y = unit(0.75, "cm"),
+                         style  = north_arrow_fancy_orienteering) +
+  
+  #labs(title = "Arkansas Delta Study Region") +
+  theme_minimal(base_size = 10) +
+  theme(axis.text  = element_blank(),
+        panel.grid = element_blank(),
+        
+  legend.position = c(0.18, 0.10),   # (x, y) in npc units
+  legend.justification = c(0, 0),    # bottom-left corner of legend box
+  legend.background   = element_rect(fill = "grey90", colour = NA),
+  legend.margin       = margin(2, 2, 2, 2, unit = "pt")
+  )
+
+p_inset
+
 
 # Left panel – CONUS map with bounding box
 p_us <- ggplot() +
   geom_sf(data = us_states, fill = "grey90", color = "white", size = 0.2) +
   geom_sf(data = delta_bbox, fill = NA, color = "red", linewidth = 0.8) +
-  theme_void() +
-  labs(title = "United States Highlighting\nArkansas Study Region")
+  theme_void() #+
+  #labs(title = "United States Highlighting\nArkansas Study Region")
+
 p_us
 
-# Right panel – Delta inset with CDL
-p_inset <- ggplot() +
-  geom_spatraster(data = delta_cdl) +
-  scale_fill_manual(
-    values       = cb_palette,
-    na.value     = "grey85",     # colour for Minor Crops
-    na.translate = TRUE,
-    breaks       = c(rat$label, NULL),
-    labels       = c(rat$label,  "Minor Crops"),
-    name         = "2019 Cropland Data Layer\n(Arkansas Delta)"
-  ) +
-  geom_sf(data = ar_counties, fill = NA, color = "grey60", linewidth = 0.2) +
-  coord_sf(crs = st_crs(ar_counties)) +
-  annotation_scale(location = "bl",
-                   width_hint = 0.35,          # ~35 % of plot width
-                   pad_x = unit(0.70, "npc"),  # nudges to centre
-                   pad_y = unit(0.15, "cm")) +
-  annotation_north_arrow(location = "bl",
-                         which_north = "true",
-                         pad_x = unit(0.75, "npc"),
-                         pad_y = unit(0.60, "cm"),
-                         style = north_arrow_fancy_orienteering) +
-  theme_minimal(base_size = 10) +
-  theme(axis.text = element_blank(),
-        panel.grid = element_blank()) +
-  labs(title = "Arkansas Delta Study Region")
-
-p_inset
-
 # Combine & export
-fig1 <- p_us + p_inset + plot_layout(widths = c(1, 1.2))
+fig1 <- p_us + p_inset + plot_layout(widths = c(0.5, 1.5))
 fig1
 
-ggsave("figure1_delta_map.png", fig1, width = 10, height = 6, dpi = 300)
-
-
-
-
-
+ggsave("output/figure1_delta_map.png", fig1, width = 10, height = 6, dpi = 600)
 
 # 3.2	Adoption of cover crops on fall cash crop fields
 # Fig. XX: Adoption of cover crops on major fall cash crop fields 
