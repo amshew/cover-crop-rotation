@@ -30,11 +30,12 @@ pacman::p_load(
   ggspatial,
   patchwork,
   CropScapeR,
-  tidyterra
+  tidyterra,
+  tidytext,
+  trend,
+  broom
 )
 
-
-# 3.1 Area Map
 
 ############################################################
 ## Figure 1 – US map with Arkansas-Delta inset + 2019 CDL ##
@@ -216,11 +217,16 @@ fig1
 
 ggsave("output/Fig1.png", fig1, width = 10, height = 6, dpi = 300)
 
+
+###################################################################################################333333
+
 # 3.2	Adoption of cover crops on fall cash crop fields
-# Fig. XX: Adoption of cover crops on major fall cash crop fields 
+# Fig. 6: Adoption of cover crops on major fall cash crop fields 
 # (referring to which cash crop is planted before in the same cover crop fields)
 
 # Load the data 
+
+# Figure 6
 
 # Defined the file path using the here package
 file_path <- here("data", "Part 1.csv")
@@ -291,32 +297,25 @@ merged_data$CDL_Cover <- factor(merged_data$CDL_Cover,
                                            "Cotton-Cover Crops", 
                                            "Other Crops-Cover Crops"))
 
+
 p <- ggplot(merged_data, aes(x = Year, y = Percentage_Cover, color = CDL_Cover, group = CDL_Cover)) +
   geom_line(linewidth = 1.5) +
   geom_point(size = 3) +
   labs(x = "Year", y = "% of MAP cropland acreage with cover crops") +
-  scale_color_manual(values = c("Soybean-Cover Crops" = "#267000",
-                                "Corn-Cover Crops" = "#ffd300",
-                                "Cotton-Cover Crops" = "#ff2626",
-                                "Other Crops-Cover Crops" = "#d69ebc"))+
+  scale_color_manual(values = c("Soybean-Cover Crops" = "#009E73",
+                                "Corn-Cover Crops" = "#F0E442",
+                                "Cotton-Cover Crops" = "#D55E00",
+                                "Other Crops-Cover Crops" = "#56B4E9"))+
   scale_x_continuous(breaks = seq(2013, 2019, by = 1))+
-  theme(text = element_text(size = 16), axis.text = element_text(size = 12))+
+  theme(
+    text                  = element_text(size = 16),
+    axis.text             = element_text(size = 12),
+    panel.grid.major.x    = element_blank(),  # remove major vertical lines
+    panel.grid.minor.x    = element_blank()   # remove minor vertical lines
+  ) +
   guides(color = guide_legend(title = "CDL Crops > Cover Crops"))
 
-
-# add the images at the maximum year for each CDL_Cover
-for (i in 1:nrow(df_max_year)) {
-  p <- p + annotation_custom(
-    raster_images[[df_max_year$CDL_Cover[i]]], 
-    xmin = df_max_year$MaxYear[i] - 4, 
-    xmax = df_max_year$MaxYear[i] + 4, 
-    ymin = df_max_year$MaxCover[i] - 0.4, 
-    ymax = df_max_year$MaxCover[i] + 0.4  
-  )
-}
-
 print(p)
-
 
 # save the plot
 out_dir <- here("output")
@@ -327,7 +326,7 @@ if (!dir.exists(out_dir)) {
 # define the full path
 out_file <- here(
   "output",
-  "Adoption of Cover Crops on CDL Fall Crop Fields_v1.tiff"
+  "Fig6.tiff"
 )
 
 # write the file
@@ -344,9 +343,10 @@ dev.off()
 
 
 # 3.3.	Succession of cash crops following winter cover crop fields   
-# Fig. XX: Cash crop succession following winter cover crop fields
+# Fig. 7: Cash crop succession following winter cover crop fields
 # (referring to which cash crop is planted after in the same cover crop fields)
 
+# Figure 7
 
 # Read the data
 file_path <- here("data", "Part 2.csv")
@@ -411,29 +411,23 @@ p <- ggplot(merged_data, aes(Year, Percentage_Cover, color = Cover_CDL, group = 
     y = "% of MAP cropland acreage with cover crops"
   ) +
   scale_color_manual(values = c(
-    "Cover Crops-Soybean"       = "#267000",
-    "Cover Crops-Corn"          = "#ffd300",
-    "Cover Crops-Cotton"        = "#ff2626",
-    "Cover Crops-Other Crops"   = "#d69ebc"
+    "Cover Crops-Soybean"       = "#009E73",
+    "Cover Crops-Corn"          = "#F0E442",
+    "Cover Crops-Cotton"        = "#D55E00",
+    "Cover Crops-Other Crops"   = "#56B4E9"
   )) +
   scale_x_continuous(breaks = seq(2013, 2019, 1)) +
+  scale_y_continuous(
+    limits = c(0, 8),                     # ← hard cap at 8
+    breaks = seq(0, 8, 2)                 # optional: control your tick marks
+  ) +
   theme(
-    text      = element_text(size = 16),
-    axis.text = element_text(size = 12)
+    text                  = element_text(size = 16),
+    axis.text             = element_text(size = 12),
+    panel.grid.major.x    = element_blank(),  # remove major vertical lines
+    panel.grid.minor.x    = element_blank()   # remove minor vertical lines
   ) +
   guides(color = guide_legend(title = "Cover Crops > CDL Crops"))
-
-# Annotate with images at each group’s max year
-for (i in seq_len(nrow(df_max_year))) {
-  lvl <- df_max_year$Cover_CDL[i]
-  p <- p + annotation_custom(
-    raster_images[[lvl]],
-    xmin = df_max_year$MaxYear[i] - 3,
-    xmax = df_max_year$MaxYear[i] + 3,
-    ymin = df_max_year$MaxCover[i] - 0.3,
-    ymax = df_max_year$MaxCover[i] + 0.3
-  )
-}
 
 print(p)
 
@@ -443,7 +437,7 @@ if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
 
 out_file <- here(
   "output",
-  "Succession of cash crops following winter cover crop fields_v2.tiff"
+  "Fig7.tiff"
 )
 
 tiff(
@@ -458,168 +452,119 @@ dev.off()
 
 
 # 3.4. Change detection in cropping patterns: Cash crops planted before and after winter cover crop 
-# Fig. XX: Cropping patterns 2013- Cash crops planted before and after winter cover crop 
+# Fig. 8: Cropping patterns 2013- Cash crops planted before and after winter cover crop 
 # (only top 15 cropping pattern combinations were presented here per year)
 
+# ─────────────────────────────────────────────────────────────
+# Figure 8 – Inter-annual cover-crop/cash-crop sequences
+# Produces one 7-panel bar chart (facets by year, 2013-2019)
+# ─────────────────────────────────────────────────────────────
 
-# Read the data
 file_path <- here("data", "Part_3_Top_15_2013to2019.csv")
-data <- read_csv(file_path)
 
-# Factor conversions and cleaning
-data <- data %>%
+data <- read_csv(file_path, show_col_types = FALSE) %>% 
   mutate(
-    cropping_pattern = as.factor(cropping_pattern),
-    Cover_vs_No_Cover = as.factor(Cover_vs_No_Cover),
-    cropping_pattern = str_trim(cropping_pattern),
-    cropping_pattern = str_to_title(cropping_pattern)
-  ) %>%
-  mutate(across(where(is.character), ~ na_if(.x, "")))
+    cropping_pattern  = str_to_title(str_trim(cropping_pattern)),
+    Cover_vs_No_Cover = factor(Cover_vs_No_Cover)
+  ) %>% 
+  mutate(across(where(is.character), ~na_if(.x, ""))) 
 
-# Prepare 2013 subset
-data_2013 <- data %>% 
-  filter(Year == 2013) %>%
-  mutate(
-    cropping_pattern = factor(
-      cropping_pattern,
-      levels = cropping_pattern[order(percentage, decreasing = FALSE)]
-    )
-  )
+# Keep the 15 largest patterns within **each** year
+data_top <- data %>% 
+  group_by(Year) %>% 
+  slice_max(order_by = percentage, n = 15, with_ties = FALSE) %>% 
+  ungroup()
 
-# Plot for 2013
-year_2013 <- ggplot(data_2013, aes(x = cropping_pattern, y = percentage)) +
-  geom_col(fill = "steelblue3") +
-  labs(title = "Year 2013", x = "Cropping Pattern", y = "% of total cropland") +
+# Use reorder_within() so bars are ordered inside each facet
+fig8 <- ggplot(data_top,
+               aes(x = reorder_within(cropping_pattern, percentage, Year),
+                   y = percentage)) +
+  # make bars 80% of the slot height so you see a sliver of gap
+  geom_col(fill = "#AA3377", width = 0.8) +
+  
+  facet_wrap(~Year, ncol = 2, scales = "free_y") +
   coord_flip() +
-  scale_y_continuous(breaks = seq(0, 20, 5)) +
+  scale_x_reordered() +
+  scale_y_continuous(breaks = seq(0, 20, 5),
+                     expand = expansion(mult = c(0, .05))) +
+  labs(x = "Cropping pattern", y = "% of total cropland") +
+  theme_minimal(base_size = 14) +
   theme(
-    text = element_text(size = 16),
-    axis.text = element_text(size = 13),
-    axis.text.x = element_text(angle = 0, hjust = 1)
+    panel.spacing = unit(1, "lines"),
+    axis.text.y   = element_text(size = 9)
   )
 
-# Prepare 2019 subset
-data_2019 <- data %>% 
-  filter(Year == 2019) %>%
-  mutate(
-    cropping_pattern = factor(
-      cropping_pattern,
-      levels = cropping_pattern[order(percentage, decreasing = FALSE)]
-    )
-  )
+# draw it interactively
+fig8
 
-# Plot for 2019
-year_2019 <- ggplot(data_2019, aes(x = cropping_pattern, y = percentage)) +
-  geom_col(fill = "steelblue3") +
-  labs(title = "Year 2019", x = "Cropping Pattern", y = "% of total cropland") +
-  coord_flip() +
-  scale_y_continuous(breaks = seq(0, 20, 5), limits = c(0, 20)) +
-  theme(
-    text = element_text(size = 16),
-    axis.text = element_text(size = 13),
-    axis.text.x = element_text(angle = 0, hjust = 1)
-  )
-
-# Combine with shared legend
-g <- (year_2013 + year_2019 + plot_layout(guides = "collect")) +
-  plot_layout(guides = "collect")
-
-print(g)
-
-# Save to output/ as a TIFF
-out_dir <- here("output")
-if (!dir.exists(out_dir)) {
-  dir.create(out_dir, recursive = TRUE)
-}
-
-out_file <- here(
-  "output",
-  "Change Detection in Cropping Patterns_2013_2019.tiff"
+# (2) bump the height when you save so that each of the 7 facets has more inches
+ggsave(
+  "output/Fig8.tiff",
+  plot   = fig8,
+  device = "tiff",
+  bg     = "white",
+  width  = 13,
+  height = 10,   # <- up from 8” to give more space
+  units  = "in",
+  dpi    = 300
 )
 
-tiff(
-  filename = out_file,
-  units    = "in",
-  width    = 13,
-  height   = 7,
-  res      = 300
-)
-print(g)
-dev.off()
+
+# Quick stat significance of year over year cover crop adoption trends
+trend_results <- data %>%            # or data_top for top-15 only
+  group_by(cropping_pattern) %>% 
+  do(tidy(lm(percentage ~ Year, data = .))) %>% 
+  ungroup() %>% 
+  filter(term == "Year") %>% 
+  mutate(sig = ifelse(p.value < 0.05, "Yes", "No"))
+
+# quick glance
+trend_results %>%
+  select(cropping_pattern, estimate, p.value, sig) %>%
+  arrange(p.value) %>%
+  # write.csv is a thin wrapper around write.table
+  write.csv(
+    "output/table_s1.csv",
+    row.names = FALSE,
+    quote     = FALSE
+  )
 
 
-# Fig. XX: Cropping patterns 2019- Cash crops planted before and after winter cover crop 
-# (only top 15 cropping pattern combinations were presented here)
+#############################################################################################################333
+# Table 1 - percent of total cropland by cropping pattern
 
-
-# Read and clean the data
-file_path <- here("data", "Part_3_Top_15_2013to2019.csv")
-data <- read_csv(file_path) %>%
+# 1) read & clean
+df <- read_csv(here("data","Part_3_Top_15_2013to2019.csv")) #%>%
   mutate(
     cropping_pattern  = str_trim(cropping_pattern) %>% str_to_title(),
-    Cover_vs_No_Cover = as.factor(Cover_vs_No_Cover),
-    cropping_pattern  = as.factor(cropping_pattern)
+    Cover_vs_No_Cover = factor(Cover_vs_No_Cover),
+    cropping_pattern  = factor(cropping_pattern)
   ) %>%
-  mutate(across(where(is.character), ~ na_if(.x, "")))
+  mutate(across(where(is.character), ~na_if(.x, "")))
 
-# Define custom color palette
-custom_palette <- c(
-  "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b",
-  "#e377c2", "#17becf", "#bcbd22", "#7f7f7f", "#dbdb8d", "#9edae5",
-  "#a55194", "#843c39", "#f7b6d2", "#ad494a", "#8c6d31", "#636363",
-  "#d6616b", "#b5bd22", "#d9d9d9", "#bc80bd", "#bebada"
+table_patterns <- df %>%
+  group_by(cropping_pattern, Year) %>%
+  summarize(
+    percentage = sum(percentage, na.rm = TRUE),
+    .groups    = "drop"
+  ) %>%
+  pivot_wider(
+    names_from   = Year,
+    values_from  = percentage,
+    values_fill  = 0
+  ) %>%
+  arrange(cropping_pattern)
+
+# 3) Inspect in R
+print(table_patterns)
+
+# 4) Write out as CSV with no quotation marks
+write.csv(
+  table_patterns,
+  "output/table_1.csv",
+  row.names = FALSE,
+  quote     = FALSE
 )
-
-# Plot for Cover Crops
-plot_cover <- data %>%
-  filter(Cover_vs_No_Cover == "Cover Crops") %>%
-  ggplot(aes(x = factor(Year), y = percentage, fill = cropping_pattern)) +
-  geom_col(position = "dodge", width = 0.8) +
-  labs(x = "Year", y = "% of total cropland") +
-  scale_x_discrete(drop = FALSE) +
-  scale_fill_manual(values = custom_palette) +
-  theme(
-    text         = element_text(size = 16),
-    axis.text    = element_text(size = 12),
-    legend.title = element_text(size = 14),
-    legend.text  = element_text(size = 12),
-    legend.position = "right"
-  ) +
-  guides(fill = guide_legend(title = "Cropping Pattern")) +
-  ggtitle("Cropping Patterns Following Cover Crops")
-
-# Plot for Non-Cover Crops
-plot_non_cover <- data %>%
-  filter(Cover_vs_No_Cover == "Non Cover Crops") %>%
-  ggplot(aes(x = factor(Year), y = percentage, fill = cropping_pattern)) +
-  geom_col(position = "dodge", width = 0.8) +
-  labs(x = "Year", y = "% of total cropland") +
-  scale_x_discrete(drop = FALSE) +
-  scale_fill_manual(values = custom_palette) +
-  theme(
-    text         = element_text(size = 16),
-    axis.text    = element_text(size = 12),
-    legend.title = element_text(size = 14),
-    legend.text  = element_text(size = 12),
-    legend.position = "right"
-  ) +
-  guides(fill = guide_legend(title = "Cropping Pattern")) +
-  ggtitle("Cropping Patterns Without Cover Crops")
-
-# Combine side-by-side
-combined_plot <- plot_cover + plot_non_cover + plot_layout(guides = "collect")
-
-print(combined_plot)
-
-# Save the combined figure
-out_dir <- here("output")
-if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
-
-out_file <- here("output", "Cropping_Patterns_Before_After_Cover_Crops_2013_2019.tiff")
-tiff(filename = out_file, units = "in", width = 14, height = 8, res = 300)
-print(combined_plot)
-dev.off()
-
 
 # Cropping pattern over times from 2013 to 2019 (combined both cover crop and non-cover crops)
 
@@ -686,96 +631,13 @@ print(p)
 dev.off()
 
 
-# HIGHLIGHTED COVER CROP USING A SINGKLE COLOR
-# Cropping pattern over times from 2013 to 2019 (combined both cover crop and non-cover crops)
-# Merge the cropping pattern names from 2013 to 2019
-
-# Read & clean the data
-data <- read_csv(here("data", "Part_3_Top_15_2013to2019.csv")) %>%
-  mutate(
-    cropping_pattern = str_trim(cropping_pattern) %>% str_to_title()
-  ) %>%
-  mutate(across(where(is.character), ~ na_if(.x, "")))
-
-# Aggregate across years & patterns
-merged_data <- data %>%
-  group_by(Year, cropping_pattern) %>%
-  summarise(
-    area       = sum(area, na.rm = TRUE),
-    percentage = mean(percentage, na.rm = TRUE),
-    .groups    = "drop"
-  )
-
-# Define which patterns to highlight in green
-highlight_patterns <- c(
-  "Soybean - Cover Crops - Soybean",
-  "Minor Crops - Cover Crops - Minor Crops",
-  "Soybean - Cover Crops - Minor Crops",
-  "Cotton - Cover Crops - Cotton"
-)
-
-all_patterns   <- unique(merged_data$cropping_pattern)
-cover_patterns <- intersect(all_patterns, highlight_patterns)
-other_patterns <- setdiff(all_patterns, highlight_patterns)
-
-# Build a named vector of colors:
-# green for any cover‐crop sequence
-# viridis palette for the rest
-highlight_color   <- "#2ca02c"   # green
-other_colors      <- viridis(length(other_patterns), option = "D")
-fill_colors <- c(
-  setNames(rep(highlight_color, length(cover_patterns)), cover_patterns),
-  setNames(other_colors, other_patterns)
-)
-
-# Plot
-h <- ggplot(merged_data, aes(
-  x = factor(Year),
-  y = percentage,
-  fill = cropping_pattern
-)) +
-  geom_col(position = "dodge", width = 0.8) +
-  labs(
-    x = "Year",
-    y = "Mean % of total cropland"
-  ) +
-  scale_x_discrete(drop = FALSE) +
-  scale_fill_manual(values = fill_colors) +
-  guides(fill = guide_legend(
-    title = "Cropping Pattern",
-    ncol  = 1
-  )) +
-  theme_minimal(base_size = 16) +
-  theme(
-    axis.text     = element_text(size = 13),
-    legend.position = "right"
-  )
-
-print(h)
-
-# Save to output/ as a TIFF
-out_dir <- here("output")
-if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
-
-out_file <- here(
-  "output",
-  "Change_in_Cropping_Patterns_Time_Series.tiff"
-)
-
-tiff(
-  filename = out_file,
-  units    = "in",
-  width    = 14,
-  height   = 8,
-  res      = 300
-)
-print(h)
-dev.off()
 
 
 #### As per Dr. Green Suggestion
 
 # Part 1: Adoption of Cover Crops on CDL Fall Crop Fields (denominator = respective total crop acres)
+
+# Figure S1:
 
 # Read the data
 data1 <- read_csv(here("data", "Part 1_Dr.Green.csv"))
@@ -801,19 +663,20 @@ i <- ggplot(data1, aes(
   ) +
   scale_x_discrete(drop = FALSE) +
   scale_fill_manual(values = c(
-    "Soybean-Cover Crops"     = "#267000",
-    "Corn-Cover Crops"        = "#ffd300",
-    "Cotton-Cover Crops"      = "#ff2626",
-    "Other Crops-Cover Crops" = "#d69ebc"
+    "Soybean-Cover Crops"     = "#009E73",
+    "Corn-Cover Crops"        = "#F0E442",
+    "Cotton-Cover Crops"      = "#D55E00",
+    "Other Crops-Cover Crops" = "#56B4E9"
   )) +
   scale_y_continuous(breaks = seq(0, 40, 10), limits = c(0, 40)) +
   theme(
-    text          = element_text(size = 16),
-    axis.text     = element_text(size = 12),
-    legend.position = "right"
+    text                  = element_text(size = 16),
+    axis.text             = element_text(size = 12),
+    panel.grid.major.x    = element_blank(),  # remove major vertical lines
+    panel.grid.minor.x    = element_blank()   # remove minor vertical lines
   ) +
   guides(fill = guide_legend(
-    title = "CDL Crops > Cover Crops",
+    title = "Major Crops > Cover Crops",
     ncol  = 1
   ))
 
@@ -826,7 +689,7 @@ if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
 tiff(
   filename = here(
     "output",
-    "Adoption_of_Cover_Crops_on_CDL_Fall_Crop_Fields_denominator_respective_total_crop_acres_v2.tiff"
+    "FigS1.tiff"
   ),
   units = "in", width = 10, height = 6, res = 300
 )
@@ -859,10 +722,10 @@ j <- ggplot(data2, aes(
   ) +
   scale_x_discrete(drop = FALSE) +
   scale_fill_manual(values = c(
-    "Cover Crops-Soybean"       = "#267000",
-    "Cover Crops-Corn"          = "#ffd300",
-    "Cover Crops-Cotton"        = "#ff2626",
-    "Cover Crops-Other Crops"   = "#d69ebc"
+    "Cover Crops-Soybean"       = "#009E73",
+    "Cover Crops-Corn"          = "#F0E442",
+    "Cover Crops-Cotton"        = "#D55E00",
+    "Cover Crops-Other Crops"   = "#56B4E9"
   )) +
   scale_y_continuous(breaks = seq(0, 40, 10), limits = c(0, 40)) +
   theme(
@@ -871,7 +734,7 @@ j <- ggplot(data2, aes(
     legend.position = "right"
   ) +
   guides(fill = guide_legend(
-    title = "Cover Crops > CDL Crops",
+    title = "Cover Crops > Major Crops",
     ncol  = 1
   ))
 
@@ -881,16 +744,13 @@ print(j)
 tiff(
   filename = here(
     "output",
-    "Succession_of_cash_crops_following_winter_cover_crop_fields_denominator_respective_total_crop_acres_v2.tiff"
+    "FigS2.tiff"
   ),
   units = "in", width = 10, height = 6, res = 300
 )
 print(j)
 dev.off()
 
-
-
-# EXTRA ANALYSIS: 
 
 # County‐level Correlation of Govt vs. Voluntary Cover Crop Acres (2013–2019)
 

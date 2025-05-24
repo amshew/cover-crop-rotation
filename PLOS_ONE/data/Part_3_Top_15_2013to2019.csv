@@ -1,106 +1,106 @@
 cropping_pattern,area,percentage,Year,Cover_vs_No_Cover
-Soybean - Non Cover Crops - Soybean,1292561.68,20.72,2013,Non Cover Crops
-Soybean - Non Cover Crops - Rice,918583.54,14.73,2013,Non Cover Crops
-Rice - Non Cover Crops - Soybean,634093.7,10.17,2013,Non Cover Crops
-Corn - Non Cover Crops - Soybean,440273.91,7.06,2013,Non Cover Crops
-Minor Crops - Non Cover Crops - Minor Crops,269931.06,4.33,2013,Non Cover Crops
-Rice - Non Cover Crops - Rice,248842.11,3.99,2013,Non Cover Crops
-Soybean - Non Cover Crops - Corn,236808.52,3.8,2013,Non Cover Crops
-Double Crops - Non Cover Crops - Soybean,170122.24,2.73,2013,Non Cover Crops
-Cotton - Non Cover Crops - Cotton,147015.12,2.36,2013,Non Cover Crops
+Soybean - None - Soybean,1292561.68,20.72,2013,None
+Soybean - None - Rice,918583.54,14.73,2013,None
+Rice - None - Soybean,634093.7,10.17,2013,None
+Corn - None - Soybean,440273.91,7.06,2013,None
+Minor Crops - None - Minor Crops,269931.06,4.33,2013,None
+Rice - None - Rice,248842.11,3.99,2013,None
+Soybean - None - Corn,236808.52,3.8,2013,None
+Double Crops - None - Soybean,170122.24,2.73,2013,None
+Cotton - None - Cotton,147015.12,2.36,2013,None
 Soybean - Cover Crops - Soybean,143292.14,2.3,2013,Cover Crops
 Minor Crops - Cover Crops - Minor Crops,128259.01,2.06,2013,Cover Crops
-Minor Crops - Non Cover Crops - Soybean,126457.89,2.03,2013,Non Cover Crops
-Soybean - Non Cover Crops - Minor Crops,105645.37,1.69,2013,Non Cover Crops
-Soybean - Non Cover Crops - Sorghum,75175.24,1.21,2013,Non Cover Crops
-Double Crops - Non Cover Crops - Corn,65161.82,1.04,2013,Non Cover Crops
-Soybean - Non Cover Crops - Soybean,1320201.7,21.26,2014,Non Cover Crops
-Rice - Non Cover Crops - Soybean,844025.65,13.59,2014,Non Cover Crops
-Soybean - Non Cover Crops - Rice,732201.04,11.79,2014,Non Cover Crops
-Rice - Non Cover Crops - Rice,326122.46,5.25,2014,Non Cover Crops
-Corn - Non Cover Crops - Soybean,289367.68,4.66,2014,Non Cover Crops
-Minor Crops - Non Cover Crops - Minor Crops,260306.38,4.19,2014,Non Cover Crops
-Soybean - Non Cover Crops - Sorghum,252541.51,4.07,2014,Non Cover Crops
-Soybean - Non Cover Crops - Corn,210373.17,3.39,2014,Non Cover Crops
-Soybean - Non Cover Crops - Minor Crops,189881.1,3.06,2014,Non Cover Crops
-Rice - Non Cover Crops - Minor Crops,176053.52,2.84,2014,Non Cover Crops
-Minor Crops - Non Cover Crops - Soybean,154979.47,2.5,2014,Non Cover Crops
-Cotton - Non Cover Crops - Cotton,113064.2,1.82,2014,Non Cover Crops
+Minor Crops - None - Soybean,126457.89,2.03,2013,None
+Soybean - None - Minor Crops,105645.37,1.69,2013,None
+Soybean - None - Sorghum,75175.24,1.21,2013,None
+Double Crops - None - Corn,65161.82,1.04,2013,None
+Soybean - None - Soybean,1320201.7,21.26,2014,None
+Rice - None - Soybean,844025.65,13.59,2014,None
+Soybean - None - Rice,732201.04,11.79,2014,None
+Rice - None - Rice,326122.46,5.25,2014,None
+Corn - None - Soybean,289367.68,4.66,2014,None
+Minor Crops - None - Minor Crops,260306.38,4.19,2014,None
+Soybean - None - Sorghum,252541.51,4.07,2014,None
+Soybean - None - Corn,210373.17,3.39,2014,None
+Soybean - None - Minor Crops,189881.1,3.06,2014,None
+Rice - None - Minor Crops,176053.52,2.84,2014,None
+Minor Crops - None - Soybean,154979.47,2.5,2014,None
+Cotton - None - Cotton,113064.2,1.82,2014,None
 Soybean - Cover Crops - Soybean,109740.62,1.77,2014,Cover Crops
-Double Crops - Non Cover Crops - Soybean,109650.33,1.77,2014,Non Cover Crops
-Cotton - Non Cover Crops - Soybean,105700.96,1.7,2014,Non Cover Crops
-Soybean - Non Cover Crops - Soybean,1346681.1,21.63,2015,Non Cover Crops
-Soybean - Non Cover Crops - Rice,800730.91,12.86,2015,Non Cover Crops
-Rice - Non Cover Crops - Soybean,781457.52,12.55,2015,Non Cover Crops
-Soybean - Non Cover Crops - Corn,381511.05,6.13,2015,Non Cover Crops
-Rice - Non Cover Crops - Rice,351961.6,5.65,2015,Non Cover Crops
-Minor Crops - Non Cover Crops - Minor Crops,273529.06,4.39,2015,Non Cover Crops
-Sorghum - Non Cover Crops - Soybean,269579.69,4.33,2015,Non Cover Crops
-Corn - Non Cover Crops - Soybean,189861.97,3.05,2015,Non Cover Crops
-Minor Crops - Non Cover Crops - Soybean,177160.56,2.85,2015,Non Cover Crops
-Minor Crops - Non Cover Crops - Rice,173831.88,2.79,2015,Non Cover Crops
+Double Crops - None - Soybean,109650.33,1.77,2014,None
+Cotton - None - Soybean,105700.96,1.7,2014,None
+Soybean - None - Soybean,1346681.1,21.63,2015,None
+Soybean - None - Rice,800730.91,12.86,2015,None
+Rice - None - Soybean,781457.52,12.55,2015,None
+Soybean - None - Corn,381511.05,6.13,2015,None
+Rice - None - Rice,351961.6,5.65,2015,None
+Minor Crops - None - Minor Crops,273529.06,4.39,2015,None
+Sorghum - None - Soybean,269579.69,4.33,2015,None
+Corn - None - Soybean,189861.97,3.05,2015,None
+Minor Crops - None - Soybean,177160.56,2.85,2015,None
+Minor Crops - None - Rice,173831.88,2.79,2015,None
 Soybean - Cover Crops - Soybean,172379.69,2.77,2015,Cover Crops
-Soybean - Non Cover Crops - Minor Crops,119681.54,1.92,2015,Non Cover Crops
-Cotton - Non Cover Crops - Cotton,112828.24,1.81,2015,Non Cover Crops
-Soybean - Non Cover Crops - Cotton,99785.47,1.6,2015,Non Cover Crops
-Double Crops - Non Cover Crops - Soybean,81416.75,1.31,2015,Non Cover Crops
-Soybean - Non Cover Crops - Soybean,1699606.97,27.24,2016,Non Cover Crops
-Rice - Non Cover Crops - Soybean,913917.64,14.65,2016,Non Cover Crops
-Soybean - Non Cover Crops - Rice,624731.65,10.01,2016,Non Cover Crops
-Corn - Non Cover Crops - Soybean,409705.49,6.57,2016,Non Cover Crops
-Soybean - Non Cover Crops - Corn,300396.74,4.82,2016,Non Cover Crops
-Rice - Non Cover Crops - Rice,293053.52,4.7,2016,Non Cover Crops
-Minor Crops - Non Cover Crops - Minor Crops,249784.36,4,2016,Non Cover Crops
-Minor Crops - Non Cover Crops - Soybean,214686.81,3.44,2016,Non Cover Crops
-Soybean - Non Cover Crops - Minor Crops,190122.16,3.05,2016,Non Cover Crops
-Cotton - Non Cover Crops - Cotton,172087.47,2.76,2016,Non Cover Crops
+Soybean - None - Minor Crops,119681.54,1.92,2015,None
+Cotton - None - Cotton,112828.24,1.81,2015,None
+Soybean - None - Cotton,99785.47,1.6,2015,None
+Double Crops - None - Soybean,81416.75,1.31,2015,None
+Soybean - None - Soybean,1699606.97,27.24,2016,None
+Rice - None - Soybean,913917.64,14.65,2016,None
+Soybean - None - Rice,624731.65,10.01,2016,None
+Corn - None - Soybean,409705.49,6.57,2016,None
+Soybean - None - Corn,300396.74,4.82,2016,None
+Rice - None - Rice,293053.52,4.7,2016,None
+Minor Crops - None - Minor Crops,249784.36,4,2016,None
+Minor Crops - None - Soybean,214686.81,3.44,2016,None
+Soybean - None - Minor Crops,190122.16,3.05,2016,None
+Cotton - None - Cotton,172087.47,2.76,2016,None
 Soybean - Cover Crops - Soybean,169075.91,2.71,2016,Cover Crops
-Rice - Non Cover Crops - Minor Crops,102593.55,1.64,2016,Non Cover Crops
-Cotton - Non Cover Crops - Soybean,72333.36,1.16,2016,Non Cover Crops
-Soybean - Non Cover Crops - Cotton,66660.04,1.07,2016,Non Cover Crops
-Corn - Non Cover Crops - Corn,54738.77,0.88,2016,Non Cover Crops
-Soybean - Non Cover Crops - Soybean,1983294.89,31.77,2017,Non Cover Crops
-Soybean - Non Cover Crops - Rice,834741.44,13.37,2017,Non Cover Crops
-Rice - Non Cover Crops - Soybean,687019.13,11,2017,Non Cover Crops
-Soybean - Non Cover Crops - Corn,367788.88,5.89,2017,Non Cover Crops
-Corn - Non Cover Crops - Soybean,300273.31,4.81,2017,Non Cover Crops
-Rice - Non Cover Crops - Rice,282320.46,4.52,2017,Non Cover Crops
-Minor Crops - Non Cover Crops - Soybean,244587.84,3.92,2017,Non Cover Crops
-Cotton - Non Cover Crops - Cotton,223388.14,3.58,2017,Non Cover Crops
-Minor Crops - Non Cover Crops - Minor Crops,195932.69,3.14,2017,Non Cover Crops
+Rice - None - Minor Crops,102593.55,1.64,2016,None
+Cotton - None - Soybean,72333.36,1.16,2016,None
+Soybean - None - Cotton,66660.04,1.07,2016,None
+Corn - None - Corn,54738.77,0.88,2016,None
+Soybean - None - Soybean,1983294.89,31.77,2017,None
+Soybean - None - Rice,834741.44,13.37,2017,None
+Rice - None - Soybean,687019.13,11,2017,None
+Soybean - None - Corn,367788.88,5.89,2017,None
+Corn - None - Soybean,300273.31,4.81,2017,None
+Rice - None - Rice,282320.46,4.52,2017,None
+Minor Crops - None - Soybean,244587.84,3.92,2017,None
+Cotton - None - Cotton,223388.14,3.58,2017,None
+Minor Crops - None - Minor Crops,195932.69,3.14,2017,None
 Soybean - Cover Crops - Soybean,157020.31,2.52,2017,Cover Crops
-Minor Crops - Non Cover Crops - Rice,140775.17,2.25,2017,Non Cover Crops
-Soybean - Non Cover Crops - Cotton,100907.86,1.62,2017,Non Cover Crops
-Soybean - Non Cover Crops - Minor Crops,94472.65,1.51,2017,Non Cover Crops
-Cotton - Non Cover Crops - Soybean,52014.53,0.83,2017,Non Cover Crops
-Corn - Non Cover Crops - Cotton,46715.05,0.75,2017,Non Cover Crops
-Soybean - Non Cover Crops - Soybean,1260120.76,20.24,2018,Non Cover Crops
-Soybean - Non Cover Crops - Rice,713580.13,11.46,2018,Non Cover Crops
-Rice - Non Cover Crops - Soybean,713127.58,11.46,2018,Non Cover Crops
-Soybean - Non Cover Crops - Minor Crops,519792.14,8.35,2018,Non Cover Crops
-Soybean - Non Cover Crops - Corn,407460.27,6.55,2018,Non Cover Crops
-Rice - Non Cover Crops - Minor Crops,336610.9,5.41,2018,Non Cover Crops
-Corn - Non Cover Crops - Soybean,289753.97,4.65,2018,Non Cover Crops
-Rice - Non Cover Crops - Rice,248850.11,4,2018,Non Cover Crops
+Minor Crops - None - Rice,140775.17,2.25,2017,None
+Soybean - None - Cotton,100907.86,1.62,2017,None
+Soybean - None - Minor Crops,94472.65,1.51,2017,None
+Cotton - None - Soybean,52014.53,0.83,2017,None
+Corn - None - Cotton,46715.05,0.75,2017,None
+Soybean - None - Soybean,1260120.76,20.24,2018,None
+Soybean - None - Rice,713580.13,11.46,2018,None
+Rice - None - Soybean,713127.58,11.46,2018,None
+Soybean - None - Minor Crops,519792.14,8.35,2018,None
+Soybean - None - Corn,407460.27,6.55,2018,None
+Rice - None - Minor Crops,336610.9,5.41,2018,None
+Corn - None - Soybean,289753.97,4.65,2018,None
+Rice - None - Rice,248850.11,4,2018,None
 Soybean - Cover Crops - Soybean,206901.26,3.32,2018,Cover Crops
-Cotton - Non Cover Crops - Cotton,183081.62,2.94,2018,Non Cover Crops
-Minor Crops - Non Cover Crops - Minor Crops,154826.02,2.49,2018,Non Cover Crops
+Cotton - None - Cotton,183081.62,2.94,2018,None
+Minor Crops - None - Minor Crops,154826.02,2.49,2018,None
 Soybean - Cover Crops - Minor Crops,133065.23,2.14,2018,Cover Crops
 Cotton - Cover Crops - Cotton,129944.7,2.09,2018,Cover Crops
-Soybean - Non Cover Crops - Cotton,86025.06,1.38,2018,Non Cover Crops
+Soybean - None - Cotton,86025.06,1.38,2018,None
 Minor Crops - Cover Crops - Minor Crops,81453.45,1.31,2018,Cover Crops
-Soybean - Non Cover Crops - Soybean,1130841.22,17.95,2019,Non Cover Crops
-Soybean - Non Cover Crops - Rice,730113.05,11.59,2019,Non Cover Crops
-Rice - Non Cover Crops - Soybean,674896.81,10.71,2019,Non Cover Crops
-Minor Crops - Non Cover Crops - Minor Crops,573220.61,9.1,2019,Non Cover Crops
-Corn - Non Cover Crops - Soybean,355714.6,5.65,2019,Non Cover Crops
-Soybean - Non Cover Crops - Corn,268172.87,4.26,2019,Non Cover Crops
-Minor Crops - Non Cover Crops - Rice,250094.37,3.97,2019,Non Cover Crops
-Rice - Non Cover Crops - Rice,248702.89,3.95,2019,Non Cover Crops
-Cotton - Non Cover Crops - Cotton,233622.61,3.71,2019,Non Cover Crops
-Minor Crops - Non Cover Crops - Soybean,221735.8,3.52,2019,Non Cover Crops
+Soybean - None - Soybean,1130841.22,17.95,2019,None
+Soybean - None - Rice,730113.05,11.59,2019,None
+Rice - None - Soybean,674896.81,10.71,2019,None
+Minor Crops - None - Minor Crops,573220.61,9.1,2019,None
+Corn - None - Soybean,355714.6,5.65,2019,None
+Soybean - None - Corn,268172.87,4.26,2019,None
+Minor Crops - None - Rice,250094.37,3.97,2019,None
+Rice - None - Rice,248702.89,3.95,2019,None
+Cotton - None - Cotton,233622.61,3.71,2019,None
+Minor Crops - None - Soybean,221735.8,3.52,2019,None
 Soybean - Cover Crops - Soybean,216030.91,3.43,2019,Cover Crops
 Minor Crops - Cover Crops - Minor Crops,146618.61,2.33,2019,Cover Crops
-Soybean - Non Cover Crops - Minor Crops,132096.07,2.1,2019,Non Cover Crops
-Rice - Non Cover Crops - Minor Crops,116988.21,1.86,2019,Non Cover Crops
+Soybean - None - Minor Crops,132096.07,2.1,2019,None
+Rice - None - Minor Crops,116988.21,1.86,2019,None
 Cotton - Cover Crops - Cotton,100130.84,1.59,2019,Cover Crops
