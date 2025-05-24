@@ -214,7 +214,7 @@ p_us
 fig1 <- p_us + p_inset + plot_layout(widths = c(0.5, 1.5))
 fig1
 
-ggsave("output/figure1_delta_map.png", fig1, width = 10, height = 6, dpi = 600)
+ggsave("output/Fig1.png", fig1, width = 10, height = 6, dpi = 300)
 
 # 3.2	Adoption of cover crops on fall cash crop fields
 # Fig. XX: Adoption of cover crops on major fall cash crop fields 
