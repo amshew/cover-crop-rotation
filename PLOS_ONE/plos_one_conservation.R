@@ -44,7 +44,7 @@ pacman::p_load(
 options(tigris_use_cache = TRUE, tigris_class = "sf")
 
 #  ╭───────────────────╮
-#  │  1. Vector data   │
+#  │  Vector data      │
 #  ╰───────────────────╯
 # ── CONUS states (drop AK, HI, PR, etc.) ─────────────────────────
 us_states <- states(cb = TRUE, year = 2020) |>
@@ -52,7 +52,7 @@ us_states <- states(cb = TRUE, year = 2020) |>
   st_transform(5070)
 
 # Arkansas counties
-# ── 0. Arkansas counties --------------------------------------------------------
+# ──  Arkansas counties --------------------------------------------------------
 ar_counties <- counties(state = "AR", cb = TRUE, year = 2020) |>
   st_transform(5070)    # lon/lat so we can test longitudes
 
@@ -66,16 +66,13 @@ delta_fips <- c("05001", "05017", "05003", "05043", "05041",
 delta_cnty <- ar_counties %>%
   filter(GEOID %in% delta_fips)
 
-# (Optional) inspect which counties made the cut:
-sort(unique(delta_cnty$NAME))
-
 #  ╭────────────────────╮
-#  │  2. Raster (CDL)   │
+#  │     Raster (CDL)   │
 #  ╰────────────────────╯
 # Download 2019 CDL for Arkansas from USDA NASS Cropland Data Layer
 
 # ------------------------------------------------------------------
-# ── 1. Arkansas CDL 2019 as RasterLayer ─────────────────────────
+# ──  Arkansas CDL 2019 as RasterLayer ─────────────────────────
 cdl_ar_rl <- GetCDLData(
   aoi   = "05",      # Arkansas FIPS; character string is safest
   year  = 2019,
@@ -83,30 +80,30 @@ cdl_ar_rl <- GetCDLData(
   format = "raster"  # <- must be raster, table, or sf
 )
 
-# ── 2. Convert to SpatRaster for terra workflows ────────────────
+# ──  Convert to SpatRaster for terra workflows ────────────────
 cdl_ar <- terra::rast(cdl_ar_rl)
 
-# ── 3. Delta counties as SpatVector in raster CRS ──────────────
+# ──  Delta counties as SpatVector in raster CRS ──────────────
 delta_vect <- delta_cnty |>
   st_transform(crs(cdl_ar)) |>
   terra::vect()                      # SpatVector for terra
 
-# ── 4.  Bounding box in raster CRS (optional, if you still want bbox) ─────
+# ──   Bounding box in raster CRS (optional, if you still want bbox) ─────
 delta_bbox <- delta_cnty |>
   st_transform(crs(cdl_ar)) |>
   st_bbox() |>
   st_as_sfc() |>
   terra::vect()       
 
-# ── 5. Crop + mask ──────────────────────────────────────────────
+# ──  Crop + mask ──────────────────────────────────────────────
 # ------------------------------------------------------------------
-# 1.  Crop & mask CDL to Delta counties ----------------------------
+# Crop & mask CDL to Delta counties ----------------------------
 # ------------------------------------------------------------------
 delta_cdl <- terra::crop(cdl_ar, delta_vect) |>
   terra::mask(delta_vect)
 
 # ------------------------------------------------------------------
-# 2.  Keep only major classes; everything else → NA ----------------
+# Keep only major classes; everything else → NA ----------------
 # ------------------------------------------------------------------
 major_codes <- c(1, 2, 3, 4, 5, 10, 24, 37, 61)   # corn, rice, soybean, cotton, fallow
 delta_cdl   <- terra::subst(delta_cdl,
@@ -115,7 +112,7 @@ delta_cdl   <- terra::subst(delta_cdl,
                             others = NA)         # minor crops become NA
 
 # ------------------------------------------------------------------
-# 3.  Promote to factor and grab the RAT ---------------------------
+# Promote to factor and grab the RAT ---------------------------
 # ------------------------------------------------------------------
 delta_cdl <- terra::as.factor(delta_cdl)
 
@@ -144,7 +141,7 @@ rat_major$Layer_1 <- label_map[ as.character(rat_major$ID) ]
 levels(delta_cdl) <- list(rat_major)
 
 ## -----------------------------------------------------------------
-## 4. Build a named palette (one colour per crop)
+##  Build a named palette (one colour per crop)
 ## -----------------------------------------------------------------
 
 cb_palette <- c(
@@ -160,7 +157,7 @@ cb_palette <- c(
 names(cb_palette) <- rat_major$Layer_1   # names drive legend text
 
 ## -----------------------------------------------------------------
-## 5. Inset map with the new legend
+##  Inset map with the new legend
 ## -----------------------------------------------------------------
 p_inset <- ggplot() +
   geom_spatraster(data = delta_cdl) +
@@ -218,15 +215,13 @@ fig1
 ggsave("output/Fig1.png", fig1, width = 10, height = 6, dpi = 300)
 
 
-###################################################################################################333333
+###################################################################################################
+### Figures 2-5 are in a separate R script called cdl_figs.R that can be run independently from here
+##################################################################################################
 
-# 3.2	Adoption of cover crops on fall cash crop fields
-# Fig. 6: Adoption of cover crops on major fall cash crop fields 
-# (referring to which cash crop is planted before in the same cover crop fields)
-
-# Load the data 
-
-# Figure 6
+###################################################################################################
+### Figure 6
+###################################################################################################
 
 # Defined the file path using the here package
 file_path <- here("data", "Part 1.csv")
@@ -342,11 +337,9 @@ print(p)
 dev.off()
 
 
-# 3.3.	Succession of cash crops following winter cover crop fields   
-# Fig. 7: Cash crop succession following winter cover crop fields
-# (referring to which cash crop is planted after in the same cover crop fields)
-
-# Figure 7
+###################################################################################################
+### Figure 7
+###################################################################################################
 
 # Read the data
 file_path <- here("data", "Part 2.csv")
@@ -451,14 +444,9 @@ print(p)
 dev.off()
 
 
-# 3.4. Change detection in cropping patterns: Cash crops planted before and after winter cover crop 
-# Fig. 8: Cropping patterns 2013- Cash crops planted before and after winter cover crop 
-# (only top 15 cropping pattern combinations were presented here per year)
-
-# ─────────────────────────────────────────────────────────────
-# Figure 8 – Inter-annual cover-crop/cash-crop sequences
-# Produces one 7-panel bar chart (facets by year, 2013-2019)
-# ─────────────────────────────────────────────────────────────
+###################################################################################################
+### Figure 8
+###################################################################################################
 
 file_path <- here("data", "Part_3_Top_15_2013to2019.csv")
 
@@ -509,6 +497,9 @@ ggsave(
   dpi    = 300
 )
 
+###################################################################################################
+### Table S1
+###################################################################################################
 
 # Quick stat significance of year over year cover crop adoption trends
 trend_results <- data %>%            # or data_top for top-15 only
@@ -530,8 +521,9 @@ trend_results %>%
   )
 
 
-#############################################################################################################333
-# Table 1 - percent of total cropland by cropping pattern
+############################################################################################################
+### Table 1 - percent of total cropland by cropping pattern
+############################################################################################################
 
 # 1) read & clean
 df <- read_csv(here("data","Part_3_Top_15_2013to2019.csv")) #%>%
@@ -566,78 +558,9 @@ write.csv(
   quote     = FALSE
 )
 
-# Cropping pattern over times from 2013 to 2019 (combined both cover crop and non-cover crops)
-
-# Read and clean the data
-file_path <- here("data", "Part_3_Top_15_2013to2019.csv")
-data <- read_csv(file_path) %>%
-  mutate(
-    cropping_pattern = str_trim(cropping_pattern) %>% str_to_title()
-  ) %>%
-  mutate(across(where(is.character), ~ na_if(.x, "")))
-
-# Aggregate by Year & Pattern
-merged_data <- data %>%
-  group_by(Year, cropping_pattern) %>%
-  summarise(
-    area       = sum(area),
-    percentage = mean(percentage),
-    .groups    = "drop"
-  )
-
-# Plot grouped bar chart
-p <- ggplot(merged_data, aes(
-  x    = factor(Year),
-  y    = percentage,
-  fill = cropping_pattern
-)) +
-  geom_col(position = "dodge", width = 0.8) +
-  labs(
-    title = "Change in Cropping Patterns over Time",
-    x     = "Year",
-    y     = "Mean % of Total Cropland"
-  ) +
-  scale_x_discrete(drop = FALSE) +
-  scale_fill_viridis_d(
-    option = "D",
-    labels = sort(unique(merged_data$cropping_pattern))
-  ) +
-  theme(
-    text         = element_text(size = 16),
-    axis.text    = element_text(size = 12),
-    legend.position = "right"
-  ) +
-  guides(fill = guide_legend(title = "Cropping Pattern"))
-
-print(p)
-
-# Save to output/ as a TIFF
-out_dir <- here("output")
-if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
-
-out_file <- here(
-  "output",
-  "Change_in_Cropping_Patterns_2013_2019_Combined.tiff"
-)
-
-tiff(
-  filename = out_file,
-  units    = "in",
-  width    = 14,
-  height   = 8,
-  res      = 300
-)
-print(p)
-dev.off()
-
-
-
-
-#### As per Dr. Green Suggestion
-
-# Part 1: Adoption of Cover Crops on CDL Fall Crop Fields (denominator = respective total crop acres)
-
-# Figure S1:
+##################################################################################
+### Figure S1
+##################################################################################
 
 # Read the data
 data1 <- read_csv(here("data", "Part 1_Dr.Green.csv"))
@@ -697,8 +620,10 @@ print(i)
 dev.off()
 
 
-# Part 2: Succession of Cash Crops Following Winter Cover Crop Fields (denominator = respective total crop acres)
-# Read the data
+###########################################################################################
+### Figure S2
+###########################################################################################
+
 data2 <- read_csv(here("data", "Part 2_Dr.Green.csv"))
 
 # Build the plot
@@ -750,154 +675,4 @@ tiff(
 )
 print(j)
 dev.off()
-
-
-# County‐level Correlation of Govt vs. Voluntary Cover Crop Acres (2013–2019)
-
-# Read & clean the county data
-combined_county <- read_csv(
-  here("data", "Govt_row_and_Model_row_mean_by_County.csv")
-) %>%
-  filter(complete.cases(.))
-
-# Simple scatter with regression & Pearson’s r
-p1 <- ggscatter(
-  combined_county,
-  x         = "Govt_Row Total_2013_2019_Acres",
-  y         = "Voluntary_Adoption_Diff_Govt_row_minus_Model_row",
-  color     = "black",
-  add       = "reg.line",
-  add.params= list(color = "blue", fill = "lightgray"),
-  conf.int  = TRUE,
-  cor.coef  = TRUE,
-  cor.method= "pearson",
-  xlab      = "Total Govt Cost-Shared Cover Crop Acres (2013–2019)",
-  ylab      = "Total Voluntary Adoption Cover Crop Acres (2013–2019)"
-) +
-  scale_x_continuous(
-    breaks = seq(0, 60000, 5000),
-    labels = number_format(scale = 1e-3, suffix = "K")
-  ) +
-  scale_y_continuous(
-    breaks = seq(0, 400000, 50000),
-    labels = number_format(scale = 1e-3, suffix = "K")
-  ) +
-  theme(
-    text      = element_text(size = 16),
-    axis.text = element_text(size = 13)
-  )
-
-print(p1)
-
-
-# Scatter with county labels (no regression)
-p2 <- ggscatter(
-  combined_county,
-  x      = "Govt_Row Total_2013_2019_Acres",
-  y      = "Voluntary_Adoption_Diff_Govt_row_minus_Model_row",
-  color  = "County",
-  label  = "County",
-  repel  = TRUE,
-  xlab   = "Total Govt Cost-Shared Cover Crop Acres (2013–2019)",
-  ylab   = "Total Voluntary Adoption Cover Crop Acres (2013–2019)"
-) +
-  scale_x_continuous(
-    breaks = seq(0, 60000, 5000),
-    labels = number_format(scale = 1e-3, suffix = "K")
-  ) +
-  scale_y_continuous(
-    breaks = seq(0, 400000, 50000),
-    labels = number_format(scale = 1e-3, suffix = "K")
-  ) +
-  theme(
-    legend.position = "none",
-    text            = element_text(size = 14),
-    axis.text       = element_text(size = 13)
-  )
-
-print(p2)
-
-# Scatter with both regression & county labels
-j <- ggscatter(
-  combined_county,
-  x         = "Govt_Row Total_2013_2019_Acres",
-  y         = "Voluntary_Adoption_Diff_Govt_row_minus_Model_row",
-  color     = "County",
-  label     = "County",
-  repel     = TRUE,
-  add       = "reg.line",
-  add.params= list(color = "blue", fill = "lightgray"),
-  conf.int  = TRUE,
-  cor.coef  = TRUE,
-  cor.method= "pearson",
-  label.x   = 3000,
-  label.sep = "\n",
-  xlab      = "Total Govt Cost-Shared Cover Crop Acres (2013–2019)",
-  ylab      = "Total Voluntary Adoption Cover Crop Acres (2013–2019)"
-) +
-  scale_x_continuous(
-    breaks = seq(0, 60000, 5000),
-    labels = number_format(scale = 1e-3, suffix = "K")
-  ) +
-  scale_y_continuous(
-    breaks = seq(0, 400000, 50000),
-    labels = number_format(scale = 1e-3, suffix = "K")
-  ) +
-  theme(
-    legend.position = "none",
-    text            = element_text(size = 14),
-    axis.text       = element_text(size = 13)
-  )
-
-print(j)
-
-# Save the final correlation plot
-out_dir <- here("output")
-if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
-
-out_file <- here("output", "County_CoverCrop_Correlation.tiff")
-tiff(
-  filename = out_file,
-  units    = "in",
-  width    = 10,
-  height   = 7,
-  res      = 300
-)
-print(j)
-dev.off()
-
-
-## Model testing
-
-model <- lm(Voluntary_Adoption_Diff_Govt_row_minus_Model_row ~ `Govt_Row Total_2013_2019_Acres`, data = combined_county)
-summary(model)
-
-
-
-## Trying different model
-
-# Melt the data for easier plotting
-m_melted <- melt(combined_county, id.vars = "County", 
-                 measure.vars = c("Govt_Row Total_2013_2019_Acres", "Voluntary_Adoption_Diff_Govt_row_minus_Model_row", "Model_Row_Total__2013_2019_Acres"),
-                 variable.name = "Adoption_Type", value.name = "Acres")
-
-# Determine max Y-axis value across all adoption metrics and set as upper limit
-max_y <- ceiling(max(m_melted$Acres) / 10000) * 10000  # Rounds up to the nearest 10,000 for consistent scaling
-
-# Plot the faceted bar plot
-ggplot(m_melted, aes(x = Adoption_Type, y = Acres, fill = Adoption_Type)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  facet_wrap(~ County, scales = "free_y") + # Facet by county
-  theme_minimal() +
-  labs(x = "Adoption Type", y = "Acres",
-       title = "Comparison of Government Cost-Shared, Voluntary, and Model-Predicted Cover Crop Adoption (2013-2019)") +
-  scale_y_continuous(limits = c(0, max_y), labels = comma) + # Set consistent Y-axis limits and format with commas
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
-
-
-
-
-
-
-
 

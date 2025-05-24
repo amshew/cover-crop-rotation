@@ -70,7 +70,7 @@ cdl18_fac <- as_factor_cdl(cdl18_codes)
 cdl19_fac <- as_factor_cdl(cdl19_codes)
 
 # ------------------------------------------------------------------
-# 5. Build synthetic winter layer -----------------------------------
+# 5. Build example winter cover crop -----------------------------------
 # ------------------------------------------------------------------
 fields$area_ha <- as.numeric(sf::st_area(fields)) / 1e4
 sel_n   <- max(1, round(nrow(fields) * cover_field_frac))
